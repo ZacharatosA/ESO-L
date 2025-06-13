@@ -1,0 +1,83 @@
+version: '3.7'
+
+services:
+  mongo-db:
+    image: mongo:${MONGO_DB_VERSION}
+    container_name: db-mongo
+    expose:
+      - "${MONGO_DB_PORT}"
+    ports:
+      - "${MONGO_DB_PORT}:${MONGO_DB_PORT}" # localhost:27017
+    networks:
+      - default
+    volumes:
+      - mongo-data:/data/db
+
+  db-crate:
+    image: crate:${CRATE_DB_VERSION}
+    container_name: db-crate
+    networks:
+      - default
+    ports:
+      - "${CRATE_DB_HTTP_PORT}:${CRATE_DB_HTTP_PORT}"
+      - "${CRATE_DB_TRANSPORT_PORT}:${CRATE_DB_TRANSPORT_PORT}"
+    command: >
+      crate
+      -Cauth.host_based.enabled=false
+      -Chttp.cors.enabled=true
+      -Chttp.cors.allow-origin="*"
+    volumes:
+      - crate-data:/data
+
+  orion-cb:
+    image: fiware/orion:${ORION_VERSION}
+    container_name: orion-cb
+    networks:
+      - default
+    depends_on:
+      - mongo-db
+    ports:
+      - "${ORION_PORT}:${ORION_PORT}"
+    command: -dbURI mongodb://mongo-db -logLevel DEBUG
+
+  quantum-leap:
+    image: orchestracities/quantumleap:${QUANTUM_LEAP_VERSION}
+    container_name: quantum-leap
+    networks:
+      - default
+    depends_on:
+      - db-crate
+    environment:
+      - CRATE_HOST=db-crate
+      - LOGLEVEL=DEBUG
+    ports:
+      - "${QUANTUM_LEAP_PORT}:${QUANTUM_LEAP_PORT}"
+
+  ul-agent:
+    image: fiware/iotagent-ul:${IOTA_UL_VERSION}
+    container_name: ul-agent
+    networks:
+      - default
+    depends_on:
+      - orion-cb
+      - mongo-db
+    ports:
+      - "${IOTA_NORTH_PORT}:${IOTA_NORTH_PORT}"
+      - "${IOTA_HTTP_PORT}:${IOTA_HTTP_PORT}"
+    environment:
+      - IOTA_CB_HOST=orion-cb
+      - IOTA_CB_PORT=${IOTA_CB_PORT}
+      - IOTA_NORTH_PORT=${IOTA_NORTH_PORT}
+      - IOTA_REGISTRY_TYPE=${IOTA_REGISTRY_TYPE}
+      - IOTA_MONGO_HOST=${IOTA_MONGO_HOST}
+      - IOTA_MONGO_PORT=${IOTA_MONGO_PORT}
+      - IOTA_MONGO_DB=${IOTA_MONGO_DB}
+      - IOTA_HTTP_PORT=${IOTA_HTTP_PORT}
+      - IOTA_CB_NGSI_VERSION=${IOTA_CB_NGSI_VERSION}
+      - IOTA_AUTOCAST=${IOTA_AUTOCAST}
+      - IOTA_TIMESTAMP=${IOTA_TIMESTAMP}
+      - IOTA_PROVIDER_URL=${IOTA_PROVIDER_URL}
+
+volumes:
+  mongo-data:
+  crate-data: 
