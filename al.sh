@@ -1,5 +1,5 @@
 #Orion CB
-#SELECT * FROM etstore WHERE entity_id = 'urn:ngsi-ld:Store:001';
+#SELECT * FROM etv1 WHERE entity_id = 'urn:ngsi-ld:Store:001';
 #curl -X POST 'http://localhost:4200/_sql?pretty' -H 'Content-Type: application/json' -d '{"stmt": "SELECT * FROM etstore LIMIT 10"}'
 
 # FIWARE Configuration
@@ -27,7 +27,7 @@ alias post-subs="curl -X POST 'http://localhost:1026/v2/subscriptions' \
 alias get-subs="curl -X GET 'http://localhost:1026/v2/subscriptions'\
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}'  |jq"
-alias del-sub="curl -X DELETE 'http://localhost:1026/v2/subscriptions/679353149066eef40500205a' \
+alias del-sub="curl -X DELETE 'http://localhost:1026/v2/subscriptions/684c3885680cf45b0502a52e' \
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}'"
 

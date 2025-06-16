@@ -21,6 +21,10 @@ services:
     ports:
       - "${CRATE_DB_HTTP_PORT}:${CRATE_DB_HTTP_PORT}"
       - "${CRATE_DB_TRANSPORT_PORT}:${CRATE_DB_TRANSPORT_PORT}"
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
     command: >
       crate
       -Cauth.host_based.enabled=false

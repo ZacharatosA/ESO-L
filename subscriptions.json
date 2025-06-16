@@ -1,0 +1,21 @@
+{
+  "description": "Notify Quantum Leap of all changes to ModbusDevice entities",
+  "subject": {
+    "entities": [
+      {
+        "idPattern": ".*",
+        "type": "ModbusDevice"
+      }
+    ],
+    "condition": {
+      "attrs": []
+    }
+  },
+  "notification": {
+    "http": {
+      "url": "http://quantum-leap:8668/v2/notify"
+    },
+    "attrs": [],
+    "metadata": ["dateCreated", "dateModified"]
+  }
+} 

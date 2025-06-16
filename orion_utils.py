@@ -3,6 +3,20 @@ import json
 import os
 from datetime import datetime
 
+# Global variable to store the backup folder name
+backup_folder = None
+
+def get_backup_folder():
+    """
+    Get the backup folder for storing JSON files
+    Returns:
+        str: The path to the backup folder
+    """
+    # Create main Backup directory if it doesn't exist
+    if not os.path.exists('Backup'):
+        os.makedirs('Backup')
+    return 'Backup'
+
 def send_to_orion(url, fiware_service, fiware_path, modbus_id, type_name, value, value_type="Array"):
     """
     Send data to Orion Context Broker
@@ -64,29 +78,35 @@ def save_to_json(data_type, data):
         data_type: Type of data (coils, input_registers, holding_registers)
         data: The data to save
     """
-    # Create Backup directory if it doesn't exist
-    if not os.path.exists('Backup'):
-        os.makedirs('Backup')
+    # Get the backup folder
+    folder = get_backup_folder()
     
-    # Create filename with timestamp
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-    filename = f'Backup/{data_type}_{timestamp}.json'
+    # Create filename
+    filename = f'{folder}/{data_type}.json'
     
-    # Prepare data for JSON
-    if data_type == 'coils':
-        json_data = {
-            'type': data_type,
-            'timestamp': timestamp,
-            'values': list(data.bits[0:9])  # Convert to list directly
-        }
-    else:  # input_registers or holding_registers
-        json_data = {
-            'type': data_type,
-            'timestamp': timestamp,
-            'values': data.registers[0:9]
-        }
+    # Prepare new data
+    new_data = {
+        'type': data_type,
+        'timestamp': datetime.now().strftime('%Y.%m.%d_%H.%M.%S'),
+        'values': list(data.bits) if data_type == 'coils' else data.registers
+    }
     
-    # Save to JSON file
+    # Read existing data if file exists
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            try:
+                existing_data = json.load(f)
+                if not isinstance(existing_data, list):
+                    existing_data = [existing_data]
+            except json.JSONDecodeError:
+                existing_data = []
+    else:
+        existing_data = []
+    
+    # Append new data
+    existing_data.append(new_data)
+    
+    # Save updated data back to file
     with open(filename, 'w') as f:
-        json.dump(json_data, f, indent=4)
-    print(f"Data saved to {filename}")
+        json.dump(existing_data, f, indent=4)
+    print(f"Data appended to {filename}")
