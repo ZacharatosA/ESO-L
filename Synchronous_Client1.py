@@ -34,7 +34,6 @@ def main():
     while True:
         client = ModbusTcpClient(MODBUS_IP, port=MODBUS_PORT)
         client.connect()
-
         read_registers(client, ADDRESS_START, DATA_SIZE, SLAVE_ID)
         
         client.close()
