@@ -11,8 +11,9 @@ class ModbusMonitor:
         self.setup_logging()
     
     def setup_logging(self):
+        # Configure logging to only show errors
         logging.basicConfig(
-            level=logging.INFO,
+            level=logging.ERROR,
             format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
         )
     
@@ -28,7 +29,8 @@ class ModbusMonitor:
                 self.logger.error(f"Error reading from {server_name}.{slave_name}: {result}")
                 return None
                 
-            self.logger.info(f"Read from {server_name}.{slave_name}: {result.registers}")
+            # Print successful reading to terminal
+            print(f"\nReading from {server_name}.{slave_name}: {result.registers}")
             
             # Save locally if enabled
             if self.config.get_storage_config()['local_save']:
@@ -37,7 +39,7 @@ class ModbusMonitor:
             # Send to Orion
             orion_config = self.config.get_orion_config()
             entity_id = self.config.get_server_config(server_name)['entity_id']
-            orion_utils.send_to_orion(
+            response = orion_utils.send_to_orion(
                 orion_config['url'],
                 orion_config['service'],
                 orion_config['servicepath'],
@@ -46,6 +48,12 @@ class ModbusMonitor:
                 result.registers,
                 "Array"
             )
+            
+            # Print Orion response to terminal
+            if response == 201:
+                print(f"Successfully sent data to Orion for {server_name}.{slave_name}")
+            elif response == 204:
+                print(f"Successfully updated Orion for {server_name}.{slave_name}")
             
             return result
         except Exception as e:

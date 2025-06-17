@@ -10,25 +10,25 @@ class ConfigManager:
     def get_orion_config(self):
         """Get Orion Context Broker configuration"""
         return {
-            'url': self.config.get('DEFAULT', 'orion_url'),
-            'service': self.config.get('DEFAULT', 'fiware_service'),
-            'servicepath': self.config.get('DEFAULT', 'fiware_servicepath')
+            'url': self.config.get('ORION_CONFIG', 'orion_url'),
+            'service': self.config.get('ORION_CONFIG', 'fiware_service'),
+            'servicepath': self.config.get('ORION_CONFIG', 'fiware_servicepath')
         }
     
     def get_storage_config(self):
         """Get local storage configuration"""
         return {
-            'local_save': self.config.getboolean('DEFAULT', 'local_save')
+            'local_save': self.config.getboolean('GENERAL', 'local_save')
         }
     
     def get_rate(self):
         """Get execution rate"""
-        return self.config.getint('DEFAULT', 'rate')
+        return self.config.getint('GENERAL', 'rate')
     
     def get_servers(self):
         """Get list of all server names"""
         return [section for section in self.config.sections() 
-                if not section.startswith('DEFAULT') and '.' not in section]
+                if section.startswith('SERVER') and '.' not in section]
     
     def get_server_config(self, server_name):
         """Get configuration for a specific server"""

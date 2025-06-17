@@ -15,7 +15,7 @@ alias get-cb-ent="curl -X GET 'http://localhost:1026/v2/entities' |jq"
 alias get-cb-${FIWARE_SERVICE}="curl -X GET 'http://localhost:1026/v2/entities' \
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}' | jq"
-alias del-cb-ent="curl -X DELETE 'http://localhost:1026/v2/entities/ModbusDevice:001' \
+alias del-cb-ent="curl -X DELETE 'http://localhost:1026/v2/entities/ModbusDevice:002' \
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}'"
 #Subscription----------------------------------------------------------------------------------
