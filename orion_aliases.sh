@@ -9,6 +9,9 @@ FIWARE_SERVICEPATH="v1"
 # Current fiware-service {iot_ul}
 # Current fiware-servicepath  {Dummy, pc_sensor , training_data}
 
+# Get the directory where the script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+JSON_DIR="${SCRIPT_DIR}/Fiware_config/jsons"
 
 alias export_cb_ent= "curl -s "http://localhost:1026/v2/entities" | jq -r '.[].id' > entities.txt"
 alias get-cb-ent="curl -X GET 'http://localhost:1026/v2/entities' |jq"
@@ -23,7 +26,7 @@ alias post-subs="curl -X POST 'http://localhost:1026/v2/subscriptions' \
   -H 'Content-Type: application/json' \
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}' \
-  -d @subscriptions.json"
+  -d @${JSON_DIR}/subscriptions.json"
 alias get-subs="curl -X GET 'http://localhost:1026/v2/subscriptions'\
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}'  |jq"
@@ -41,7 +44,7 @@ alias post-serv="curl -X POST 'http://localhost:4061/iot/services' \
   -H 'Content-Type: application/json' \
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}' \
-  -d @services_inf_sens.json"
+  -d @${JSON_DIR}/services_inf_sens.json"
 alias del-serv="curl -iX DELETE \
   'http://localhost:4061/iot/services/?resource=/iot/d&apikey=inferencekey' \
   -H 'fiware-service: ${FIWARE_SERVICE}' \
@@ -54,7 +57,7 @@ alias post-dev="curl -X POST 'http://localhost:4061/iot/devices' \
   -H 'Content-Type: application/json' \
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}' \
-  -d @devices.json"
+  -d @${JSON_DIR}/devices.json"
 alias del-dev="curl -X DELETE 'http://localhost:4061/iot/devices/TempSensor' \
   -H 'fiware-service: ${FIWARE_SERVICE}' \
   -H 'fiware-servicepath: /${FIWARE_SERVICEPATH}'"
