@@ -4,9 +4,9 @@ import os
 from datetime import datetime
 import logging
 
-# Get the directory where the script is located
-script_dir = os.path.dirname(os.path.abspath(__file__))
-log_file = os.path.join(script_dir, 'logs')
+# Get the project root directory (two levels up from src)
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+log_file = os.path.join(project_root, 'data', 'logs')
 
 # Setup logging to file
 logging.basicConfig(
@@ -27,7 +27,7 @@ def get_backup_folder():
     """
     try:
         # Create main Backup directory if it doesn't exist
-        backup_path = os.path.join(script_dir, 'Backup')
+        backup_path = os.path.join(project_root, 'data', 'Backup')
         if not os.path.exists(backup_path):
             os.makedirs(backup_path)
         return backup_path

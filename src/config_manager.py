@@ -4,7 +4,9 @@ import os
 class ConfigManager:
     def __init__(self):
         self.config = configparser.ConfigParser()
-        config_path = os.path.join(os.path.dirname(__file__), 'config.conf')
+        # Get the project root directory (two levels up from src)
+        project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        config_path = os.path.join(project_root, 'App_Config', 'config.conf')
         self.config.read(config_path)
     
     def get_orion_config(self):
