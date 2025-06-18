@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  modbus-orion-app:
+    build: .
+    container_name: modbus-orion-app
+    volumes:
+      - ./data:/app/data
+      - ./App_Config:/app/App_Config
+    restart: unless-stopped
+    networks:
+      - modbus-network
+
+networks:
+  modbus-network:
+    driver: bridge 

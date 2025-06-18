@@ -1,0 +1,14 @@
+.git
+.gitignore
+data/
+Fiware_config/
+orion_aliases.sh
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.env
+*.log 
