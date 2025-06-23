@@ -4,6 +4,10 @@ from config_manager import ConfigManager
 from modbus_client import ModbusClient
 import orion_utils
 
+# Main Application Class - Continuous Modbus Monitor
+# This class runs continuously, reading configuration from config.conf file
+# Makes requests to Modbus devices based on configuration settings
+# Sends responses to Orion Context Broker and stores data locally as JSON backup
 class ModbusMonitor:
     def __init__(self):
         self.config = ConfigManager()
@@ -19,6 +23,7 @@ class ModbusMonitor:
     
     def read_registers(self, client, address_start, data_size, slave_id, server_name, slave_name):
         try:
+            # Execute Modbus read holding registers request
             result = client.read_registers(
                 address_start,
                 data_size,
@@ -32,11 +37,11 @@ class ModbusMonitor:
             # Print successful reading to terminal
             print(f"\nReading from {server_name}.{slave_name}: {result.registers}")
             
-            # Save locally if enabled
+            # Save locally if enabled in configuration
             if self.config.get_storage_config()['local_save']:
                 orion_utils.save_to_json(server_name, result, slave_name)
             
-            # Send to Orion
+            # Send data to Orion Context Broker
             orion_config = self.config.get_orion_config()
             entity_id = self.config.get_server_config(server_name)['entity_id']
             response = orion_utils.send_to_orion(
@@ -49,7 +54,7 @@ class ModbusMonitor:
                 "Array"
             )
             
-            # Print Orion response to terminal
+            # Print Orion response status to terminal
             if response == 201:
                 print(f"Successfully sent data to Orion for {server_name}.{slave_name}")
             elif response == 204:
@@ -62,7 +67,7 @@ class ModbusMonitor:
     
     def process_server(self, server_name):
         try:
-            # Get server configuration
+            # Get server configuration from config file
             server_config = self.config.get_server_config(server_name)
             client = ModbusClient(server_config['ip'], server_config['port'])
             client.connect()
@@ -70,7 +75,7 @@ class ModbusMonitor:
             # Get all slaves for this server
             slaves = self.config.get_server_slaves(server_name)
             
-            # Process each slave
+            # Process each slave configured for this server
             for slave_name, slave_config in slaves.items():
                 self.read_registers(
                     client,
@@ -88,14 +93,14 @@ class ModbusMonitor:
     def run(self):
         while True:
             try:
-                # Get all servers
+                # Get all configured servers from config file
                 servers = self.config.get_servers()
                 
-                # Process each server
+                # Process each server and its slaves
                 for server_name in servers:
                     self.process_server(server_name)
                 
-                # Wait for next execution
+                # Wait for next execution based on configured rate (executions per minute)
                 rate = self.config.get_rate()
                 sleep_time = 60 / rate  # Convert executions per minute to seconds
                 time.sleep(sleep_time)

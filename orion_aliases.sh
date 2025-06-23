@@ -11,7 +11,7 @@ FIWARE_SERVICEPATH="v1"
 
 # Get the directory where the script is located
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-JSON_DIR="${SCRIPT_DIR}/Fiware_config/jsons"
+JSON_DIR="${SCRIPT_DIR}/Fiware_config/Jsons"
 
 alias export_cb_ent= "curl -s "http://localhost:1026/v2/entities" | jq -r '.[].id' > entities.txt"
 alias get-cb-ent="curl -X GET 'http://localhost:1026/v2/entities' |jq"

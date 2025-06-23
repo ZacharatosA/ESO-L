@@ -4,6 +4,12 @@ import os
 from datetime import datetime
 import logging
 
+# Orion Utilities Module - Contains helper functions for:
+# 1. Sending Modbus data to Orion Context Broker via NGSI-v2 API
+# 2. Local storage of data in JSON files in the Backup folder
+# 3. Managing timestamps and metadata for the data
+# Supports creating new entities in Orion or updating existing ones
+
 # Get the project root directory (two levels up from src)
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 log_file = os.path.join(project_root, 'data', 'logs')
@@ -62,6 +68,7 @@ def send_to_orion(url, fiware_service, fiware_path, entity_id, type_name, value,
         response = requests.get(check_url, headers=headers)
         
         if response.status_code == 404:  # Entity doesn't exist, create new
+            # Create new entity with the register data
             data = {
                 "id": entity_id,
                 "type": "ModbusDevice",
@@ -80,7 +87,7 @@ def send_to_orion(url, fiware_service, fiware_path, entity_id, type_name, value,
             if response.status_code != 201:
                 logger.error(f"Failed to create entity {entity_id}. Response: {response.status_code}")
         else:  # Entity exists, update attribute
-            # Use batch operation to add new attribute
+            # Use batch operation to append new attribute to existing entity
             batch_url = f"{url.replace('/entities', '/op/update')}"
             data = {
                 "actionType": "append",
@@ -125,11 +132,11 @@ def save_to_json(server_name, data, slave_name):
         # Create filename
         filename = f'{folder}/{server_name}.json'
         
-        # Prepare new data
+        # Prepare new data entry with timestamp
         new_data = {
             'type': slave_name,
             'timestamp': datetime.now().strftime('%Y.%m.%d_%H.%M.%S'),
-            'values': list(data.bits) if 'coils' in slave_name.lower() else data.registers
+            'values': list(data.bits) if 'coils' in slave_name.lower() else data.registers  # Handle coils or registers
         }
         
         # Read existing data if file exists

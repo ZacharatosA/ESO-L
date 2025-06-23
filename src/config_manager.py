@@ -1,6 +1,9 @@
 import configparser
 import os
 
+# Configuration Manager Class - Handles loading and reading settings from config.conf file
+# Provides methods to access Modbus connection parameters (IP, port, slave IDs, register addresses)
+# as well as Orion Context Broker settings and general application settings (rate, local_save)
 class ConfigManager:
     def __init__(self):
         self.config = configparser.ConfigParser()
